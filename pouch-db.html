@@ -1,0 +1,38 @@
+<!-- PouchDB script -->
+<script src="../bower_components/pouchdb/dist/pouchdb-nightly.js"></script>
+
+<!-- element -->
+<polymer-element name="pouch-db" attributes="name db sync">
+
+  <!-- template -->
+  <template>
+    <style>:host { display: none; }</style>
+  </template>
+
+  <!-- script -->
+  <script>
+  Polymer('pouch-db', {
+    name: '',
+    sync: '',
+    nameChanged: function() {
+      if (this.name) {
+        this.db = new PouchDB(this.name);
+      }
+    },
+    syncChanged: function() {
+      if (this.sync) {
+        // TODO: set up syncing
+      } else {
+        // TODO: stop syncing
+      }
+    },
+    save: function(doc) {
+      if (doc._id) {
+        return this.db.put(doc);
+      } else {
+        return this.db.post(doc);
+      }
+    }
+  });
+  </script>
+</polymer-element>
