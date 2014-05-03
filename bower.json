@@ -18,7 +18,7 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.2.3",
-    "pouchdb": "~2.2.0"
+    "polymer": "Polymer/polymer#master",
+    "pouchdb": "pouchdb/pouchdb#~2.2.0"
   }
 }
