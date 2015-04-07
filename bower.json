@@ -13,6 +13,6 @@
     "bower_components"
   ],
   "dependencies": {
-    "pouchdb": "pouchdb#master"
+    "pouchdb": "pouchdb#~3"
   }
 }
