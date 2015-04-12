@@ -1,2 +1,128 @@
 <!-- PouchDB script -->
 <script src="../pouchdb/dist/pouchdb.js"></script>
+
+<!-- element -->
+<polymer-element name="pouch-db" attributes="db">
+<template>
+  <style>:host { display: none; }</style>
+</template>
+
+<script>
+  Polymer({
+    db: '',
+    ready: function() {
+      if (this.db) {
+        this.storage = new PouchDB(this.db);
+      }
+    },
+    get: function(id) {
+      var request = this.storage.get(id, { attachments: true });
+
+      request.then(function(result) {
+        console.log('loaded', id, result._id);
+      }, function(result) {
+        console.error('error loading', id, result);
+      });
+
+      return request;
+    },
+    put: function(doc, id) {
+      return this.storage.get(id).then(function(result) {
+        console.log('found');
+
+        doc._id = result._id;
+        doc._rev = result._rev;
+
+        var request =  this.storage.put(doc, id);
+
+        request.then(function(result) {
+          console.log('saved', doc, result);
+        }, function(err) {
+          console.error('error saving', doc._id, err);
+        });
+
+        return request;
+      }.bind(this), function(err) {
+        console.log('not found');
+
+        doc._id = id;
+
+        var request = this.storage.put(doc);
+
+        request.then(function(result) {
+          //console.log(doc);
+          console.log('saved');
+        }, function(err) {
+          console.error('error saving', doc._id, err);
+        });
+
+        return request;
+      }.bind(this));
+    },
+    remove: function(item) {
+      var request = this.storage.remove({
+        _id: item._id,
+        _rev: item._rev,
+      });
+
+      request.then(function() {
+        console.log('removed', item._id);
+      }, function(err) {
+        console.error('error removing', item._id, err);
+      });
+
+      return request;
+    },
+    putAttachment: function(docId, file) {
+      return this.storage.get(docId).then(function(result) {
+        console.log('found', result);
+
+        var request = this.storage.putAttachment(result._id, file.name, result._rev, file, file.type);
+
+        request.then(function(result) {
+          console.log('saved attachment', file.name, file, result);
+        }, function(err) {
+          console.error('error saving attachment', file.name, err);
+        });
+
+        return request;
+      }.bind(this), function(err) {
+        console.error('error loading doc', docId);
+      });
+
+      return request;
+    },
+    getAttachment: function(docId, attachmentId) {
+      console.log('loading attachment', docId, attachmentId);
+      var request = this.storage.getAttachment(docId, attachmentId);
+
+      request.then(function(result) {
+        console.log('attachment', result);
+      }.bind(this), function(err) {
+        console.error('error getting attachment', docId, attachmentId, err);
+      });
+
+      return request;
+    },
+    removeAttachment: function(docId, attachmentId) {
+      return this.storage.get(docId).then(function(result) {
+        console.log('found', result);
+
+        var request = this.storage.removeAttachment(result._id, attachmentId, result._rev);
+
+        request.then(function(result) {
+          console.log('removed attachment', attachmentId, result);
+        }, function(err) {
+          console.error('error removing attachment', attachmentId, err);
+        });
+
+        return request;
+      }.bind(this), function(err) {
+        console.error('error loading doc', docId);
+      });
+
+      return request;
+    }
+  });
+</script>
+</polymer-element>
